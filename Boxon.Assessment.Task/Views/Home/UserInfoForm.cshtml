@@ -1,0 +1,274 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    <div class="form-check form-check-inline" onclick="openModel('OnlyEnglish')">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked>
+        <label class="form-check-label" for="inlineRadio1">Only English</label>
+    </div>
+    <div class="form-check form-check-inline" onclick="openModel('EnglishArabic')">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+        <label class="form-check-label" for="inlineRadio2">English & Arabic</label>
+    </div>
+    <button type="button" onclick="SaveValue();" class="btn btn-primary">Save record</button>
+    <p class="" id="ErrorMessage"></p>
+    <br />
+
+    <div id="EnglishArabic">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" onclick="isEnglishTab = true" role="presentation">
+                <button class="nav-link active" id="englishTab-tab" data-bs-toggle="tab" data-bs-target="#englishTab" type="button" role="tab" aria-controls="englishTab" aria-selected="true">English</button>
+            </li>
+            <li class="nav-item" onclick="isEnglishTab = false" role="presentation">
+                <button class="nav-link" id="arabicTab-tab" data-bs-toggle="tab" data-bs-target="#arabicTab" type="button" role="tab" aria-controls="arabicTab" aria-selected="false">Arabic</button>
+            </li>
+        </ul>
+        <form>
+            <div class="tab-content">
+                <div id="englishTab" class="tab-pane fade show active" role="tabpanel" aria-labelledby="englishTab-tab">
+                    <button type="button" onclick="AddElement();" class="btn btn-primary btn-sm">Add New</button>
+
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label class="" for="nameInput">Name</label>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="" for="emailInput">Email</label>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="" for="phoneInput">Phone</label>
+                        </div>
+                        <div class="col-md-1 ">
+                            <label class="" for="removebut">Remove</label>
+                        </div>
+                    </div>
+                    <div id="mainEnDiv">
+                    </div>
+                </div>
+                <div id="arabicTab" class="tab-pane fade" role="tabpanel" aria-labelledby="arabicTab-tab">
+                    <button type="button" onclick="AddElement();" id="arabicAddRowButtion" class="btn btn-primary btn-sm">اضف جديد</button>
+
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label class="" for="nameInput">اسم</label>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="" for="emailInput">بريد إلكتروني</label>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="" for="phoneInput">هاتف</label>
+                        </div>
+                        <div class="col-md-1 ">
+                            <label class="" for="removebut">يزيل</label>
+                        </div>
+                    </div>
+                    <div id="mainArDiv">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+}
+
+<script>
+    window.onload = function () {
+        AddElement();
+    };
+    let onlyEnglishCount = 0;
+    let englishCount = 0;
+    let arabicCount = 0;
+    let isOnlyEnglish = true;
+    let isEnglishTab = true;
+    let formEnIds = [];
+    let formArIds = [];
+    function getForm(index, lang) {
+        var form = "";
+        if (lang == 'en') {
+            form = ' <div class="row align-items-center" id="row' + index + '"> ' +
+                ' <div class="col-md-4">' +
+                ' <input type="text" class="form-control mb-2"  id="nameEn' + index + '" placeholder="Name">' +
+                '  </div>' +
+                '  <div class="col-md-3">' +
+                '     <input type="email" class="form-control mb-2"id="emailEn' + index + '" placeholder="Email">' +
+                ' </div>' +
+                '  <div class="col-md-3">' +
+                '    <input type="text" class="form-control mb-2" id="phoneEn' + index + '" placeholder="Phone">' +
+                '    </div>' +
+                '      <div class="col-md-1 mt-2">' +
+                '           <button type="button" class="btn btn-outline-danger btn-sm" id="removeEn' + index + '" onclick="removeRow(' + "'" + index + "'" + ') "><i class="fa fa-remove"  style="font - size: 24px"></i></button>' +
+                '        </div>' +
+                '     </div>';
+        }
+        else {
+            form = ' <div class="row align-items-center" id="rowAr' + index + '"> ' +
+                ' <div class="col-md-4">' +
+                ' <input type="text" class="form-control mb-2" id="nameAr' + index + '" placeholder="اسم">' +
+                '  </div>' +
+                '  <div class="col-md-3">' +
+                '     <input type="email" class="form-control mb-2"  id="emailAr' + index + '" placeholder="بريد إلكتروني">' +
+                ' </div>' +
+                '  <div class="col-md-3">' +
+                '    <input type="text" class="form-control mb-2"  id="phoneAr' + index + '" placeholder="هاتف">' +
+                '    </div>' +
+                '      <div class="col-md-1 mt-2">' +
+                '           <button type="button" class="btn btn-outline-danger btn-sm"  id="removeAr' + index + '" onclick="removeRow(' + "'" + index + "'" + ') "><i class="fa fa-remove"  style="font - size: 24px"></i></button>' +
+                '        </div>' +
+                '     </div>';
+        }
+        return form;
+    }
+
+    function AddElement() {
+        var uuid = generate_uuidv4().replace("-", "");
+
+        if (isOnlyEnglish == true) {
+            document.getElementById('mainEnDiv').innerHTML += getForm(uuid, 'en');
+            document.getElementById('mainArDiv').innerHTML += getForm(uuid, 'ar');
+            formEnIds.push(uuid);
+            formArIds.push(uuid);
+            showButton_OnlyEnglish(false);
+
+        } else {
+            if (isEnglishTab == true) {
+                document.getElementById('mainEnDiv').innerHTML += getForm(uuid, 'en');
+                formEnIds.push(uuid);
+            }
+            else {
+                document.getElementById('mainArDiv').innerHTML += getForm(uuid, 'ar');
+                formArIds.push(uuid);
+            }
+        }
+    }
+    function showButton_OnlyEnglish(isShow = true) {
+        if (isShow == true)
+            $("#arabicAddRowButtion").show();
+        else
+            $("#arabicAddRowButtion").hide();
+
+        if (formArIds && formArIds.length > 0) {
+            for (const id of formArIds) {
+                if (isShow == true)
+                    $("#removeAr" + id).show();
+                else
+                    $("#removeAr" + id).hide();
+            }
+        }
+    }
+    function removeRow(rowNumber) {
+        var indexEn = formEnIds.indexOf(rowNumber);
+        var indexAr = formArIds.indexOf(rowNumber);
+        if (indexEn >= 0) {
+            $("#row" + rowNumber).remove();
+            formEnIds.splice(indexEn, 1)
+        }
+        if (indexAr >= 0) {
+            $("#rowAr" + rowNumber).remove();
+            formArIds.splice(indexAr, 1);
+        }
+    }
+    function checkValidation() {
+        var isValid = true;
+        const controlListEn = document.getElementById("mainEnDiv");
+        for (const child of controlListEn.children) {
+            for (const subchild of child.children) {
+                if (subchild.children[0].value == "" && subchild.children[0].tagName != 'BUTTON') {
+                    subchild.children[0].style.border = "1px solid red";
+                    subchild.innerHTML += '<p> please enter value</p>'
+                    console.log(subchild.children[0].tagName);
+                    isValid = false;
+                }
+            }
+        }
+        if (isValid == true) {
+            const controlListAr = document.getElementById("mainArDiv");
+            for (const child of controlListAr.children) {
+                for (const subchild of child.children) {
+                    if (subchild.children[0].value == "" && subchild.children[0].tagName != 'BUTTON') {
+                        subchild.children[0].style.border = "1px solid red";
+                        subchild.innerHTML += '<p> please enter value</p>'
+                        console.log(subchild.children[0].tagName);
+                        isValid = false;
+                    }
+                }
+            }
+        }
+        return isValid;
+    }
+    function SaveValue() {
+        if (formEnIds && formEnIds.length <= 0 && formArIds && formArIds.length <= 0) {
+            document.getElementById('ErrorMessage').innerHTML = 'Please enter record';
+
+            return;
+        }
+        if (checkValidation() == true) {
+            var saveRecordModel = [];
+            var modelE = {};
+            var modelAr = {};
+            for (const id of formEnIds) {
+                var nameEn = document.getElementById('nameEn' + id).value;
+                var emailEn = document.getElementById('emailEn' + id).value;
+                var phoneEn = document.getElementById('phoneEn' + id).value;
+                modelE = {};
+                modelEn = {
+                    "Name": nameEn,
+                    "Email": emailEn,
+                    "Phone": phoneEn,
+                    "Language": 'en',
+                    "ArticalId": id,
+                };
+                saveRecordModel.push(modelEn);
+            }
+            for (const id of formArIds) {
+                var nameAr = document.getElementById('nameAr' + id).value;
+                var emailAr = document.getElementById('emailAr' + id).value;
+                var phoneAr = document.getElementById('phoneAr' + id).value;
+                modelAr = {};
+                modelAr = {
+                    "Name": nameAr,
+                    "Email": emailAr,
+                    "Phone": phoneAr,
+                    "Language": 'ar',
+                    "ArticalId": id,
+                };
+                saveRecordModel.push(modelAr);
+            }
+            var UserRecord = {
+                "UserInfoMode": saveRecordModel
+            }
+            debugger;
+            AjaxPostCall('POST', '/Home/UserInfoForm', UserRecord);
+        }
+    }
+    function AjaxPostCall(type, url, model) {
+        return $.ajax({
+            type: type,
+            url: url,
+            data: model,
+            success: function (result) {
+                document.getElementById('ErrorMessage').innerHTML = 'Save record successfully';
+            }
+        })
+    }
+    function generate_uuidv4() {
+        var dt = new Date().getTime();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+            function (c) {
+                var rnd = Math.random() * 16;//random number in range 0 to 16
+                rnd = (dt + rnd) % 16 | 0;
+                dt = Math.floor(dt / 16);
+                return (c === 'x' ? rnd : (rnd & 0x3 | 0x8)).toString(16);
+            });
+    }
+    function openModel(model) {
+        if (model == 'OnlyEnglish') {
+            isOnlyEnglish = true;
+            showButton_OnlyEnglish(false);
+        }
+        else {
+            isOnlyEnglish = false;
+            showButton_OnlyEnglish(true);
+        }
+    }
+
+</script>
